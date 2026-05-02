@@ -1,6 +1,7 @@
 #include "app.h"
 
-#include <GLFW/glfw3.h>
+#include "renderer.h"
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -68,6 +69,20 @@ void app_run(void) {
     GLFWwindow *window = app_window_initialize(WIDTH, HEIGHT, "BlocksWorld");
     app_glad_init(WIDTH, HEIGHT);
     glfwSetFramebufferSizeCallback(window, app_framebuffer_size_callback);
+
+    float vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+         0.0f,  0.5f, 0.0f,
+    };
+
+    uint32_t VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof vertices, vertices, GL_STATIC_DRAW);
+
+    Shader basic_shader = renderer_shader_vf_create("../shaders/basic.vs", "../shaders/basic.fs");
+    ShaderProgram basic_program = renderer_shader_program_create(&basic_shader);
 
     app_window_run_loop(window, 5.f);
 

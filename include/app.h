@@ -1,3 +1,6 @@
+#ifndef APP_H
+#define APP_H
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stdint.h>
@@ -20,3 +23,5 @@ void app_framebuffer_size_callback(GLFWwindow* window, int width, int height);
 /* -------------- */
 
 void app_run(void);
+
+#endif /* APP_H */

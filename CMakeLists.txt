@@ -12,9 +12,11 @@ add_subdirectory(vendors)
 
 add_executable(${PROJECT_NAME}
     include/app.h
+    include/renderer.h
 
     src/main.c
     src/app.c
+    src/renderer.c
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
