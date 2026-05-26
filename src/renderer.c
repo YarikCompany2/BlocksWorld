@@ -1,4 +1,6 @@
 #include "renderer.h"
+#include "GLFW/glfw3.h"
+#include "app.h"
 
 #include <stdint.h>
 #include <stdio.h>
@@ -19,14 +21,14 @@ char *renderer_shader_get_source(const char shader_file[]) {
     uint32_t size = ftell(file) + 1;
     rewind(file);
 
-    char* shader_source = malloc((sizeof *shader_source) * size);
+    char* shader_source = malloc(sizeof(char) * size);
     if (!shader_source) {
         printf("Failed to allocate shader_text\n");
         fclose(file);
         exit(EXIT_FAILURE);
     }
 
-    size_t elements_read = fread(shader_source, sizeof *shader_source, size, file);
+    size_t elements_read = fread(shader_source, sizeof(char), size, file);
     if (elements_read <= MIN_POSSIBLE_SIZE_OF_FILE)
         printf("Specified shader file %s is empty\n", shader_file);
 
@@ -104,4 +106,121 @@ ShaderProgram renderer_shader_program_create(Shader *shader) {
 
     return shader_program;
 }
-/* -------------------- */
+
+/* ---- SHAPES ---- */
+static Renderer *s_renderer;
+
+Triangle renderer_triangle_create(Vertex a, Vertex b, Vertex c) {
+    Triangle triangle;
+    triangle.vertices[0] = a;
+    triangle.vertices[1] = b;
+    triangle.vertices[2] = c;
+
+    return triangle;
+}
+
+void renderer_triangle_draw(Triangle *triangle) {
+    const uint8_t TRIANGLE_VERTECIES_COUNT = 3;
+
+    if (s_renderer->buffer_data.size + TRIANGLE_VERTECIES_COUNT > s_renderer->buffer_data.capacity)
+        renderer_buffer_data_reallocate(&s_renderer->buffer_data);
+
+    uint32_t i;
+    for (i = 0; i < TRIANGLE_VERTECIES_COUNT; i++) {
+        s_renderer->buffer_data.data[s_renderer->buffer_data.size + i] = triangle->vertices[i];
+    }
+    s_renderer->buffer_data.size += TRIANGLE_VERTECIES_COUNT;
+}
+
+/* ---- BUFFER ---- */
+BufferData renderer_buffer_data_create() {
+    BufferData bufferData;
+    bufferData.capacity = 64;
+    bufferData.size = 0;
+    bufferData.data = malloc(sizeof(Vertex) * bufferData.capacity);
+
+    printf("sizeof(Vertex) * bufferData.capacity: %lu\n", sizeof(Vertex) * bufferData.capacity);
+
+    return bufferData;
+}
+
+void renderer_buffer_data_destroy(BufferData bufferData) {
+    free(bufferData.data);
+}
+
+void renderer_buffer_data_reallocate(BufferData *bufferData) {
+    bufferData->capacity *= 1.5f;
+    bufferData->data = realloc(bufferData->data, sizeof(Vertex) * bufferData->capacity);
+}
+
+/* ---- RENDERER ---- */
+Renderer* renderer_create(GLFWwindow* window) {
+    Renderer* renderer = malloc(sizeof(Renderer));
+    glGenVertexArrays(1, &renderer->VAO);
+    glGenBuffers(1, &renderer->VBO);
+
+    glBindVertexArray(renderer->VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, renderer->VBO);
+
+    renderer->window = window;
+    renderer->buffer_data = renderer_buffer_data_create();
+
+    return renderer;
+}
+
+void renderer_destroy(Renderer *renderer) {
+    renderer_buffer_data_destroy(renderer->buffer_data);
+    free(renderer);
+}
+
+void renderer_start_drawing(GLFWwindow *window) {
+    if (s_renderer) {
+        fprintf(stderr, "You can call renderer_start_drawing() only one time\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* uint32_t VAO, VBO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    glGenBuffers(1, &VBO); */
+
+    s_renderer = renderer_create(window);
+}
+
+void renderer_end_drawing() {
+    if (!s_renderer) {
+        fprintf(stderr, "You can't call renderer_end_drawing() function before renderer_start_drawing()\n");
+        exit(EXIT_FAILURE);
+    }
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, s_renderer->VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * s_renderer->buffer_data.size, s_renderer->buffer_data.data, GL_STATIC_DRAW);
+
+    printf("sizeof * buffer_data.size: %lu\n", (sizeof(Vertex) * s_renderer->buffer_data.size));
+    printf("buffer_data.size: %d\n", s_renderer->buffer_data.size);
+
+    Shader basic_shader = renderer_shader_vf_create("../shaders/basic.vs", "../shaders/basic.fs");
+    ShaderProgram basic_program = renderer_shader_program_create(&basic_shader);
+
+    while (!glfwWindowShouldClose(s_renderer->window)) {
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glUseProgram(basic_program);
+        glBindVertexArray(s_renderer->VAO);
+        glDrawArrays(GL_TRIANGLES, 0, s_renderer->buffer_data.size);
+
+        glfwSwapBuffers(s_renderer->window);
+        glfwPollEvents();
+    }
+
+    glDeleteVertexArrays(1, &s_renderer->VAO);
+    glDeleteBuffers(1, &s_renderer->VBO);
+    glDeleteProgram(basic_program);
+
+    renderer_destroy(s_renderer);
+}
