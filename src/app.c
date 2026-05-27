@@ -1,9 +1,9 @@
 #include "app.h"
 
 #include "renderer.h"
+#include "bw_math.h"
 
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
 
 const uint32_t WIDTH = 800, HEIGHT = 600;
@@ -52,7 +52,11 @@ void app_framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 }
 
 void app_run(void) {
-    GLFWwindow *window = app_window_initialize(WIDTH, HEIGHT, "BlocksWorld");
+    Matrix4f mat = math_matrix4f_create(1.0f);
+
+    math_matrix4f_print(&mat);
+
+    /* GLFWwindow *window = app_window_initialize(WIDTH, HEIGHT, "BlocksWorld");
     app_glad_init(WIDTH, HEIGHT);
     glfwSetFramebufferSizeCallback(window, app_framebuffer_size_callback);
 
@@ -78,5 +82,5 @@ void app_run(void) {
     renderer_end_drawing();
 
 
-    app_window_terminate(window);
+    app_window_terminate(window); */
 }
