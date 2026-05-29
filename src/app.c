@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 const uint32_t WIDTH = 800, HEIGHT = 600;
 
@@ -52,9 +53,27 @@ void app_framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 }
 
 void app_run(void) {
-    Matrix4f mat = math_matrix4f_create(1.0f);
+    Matrix4f mat;
+    Matrix4f mat2;
 
-    math_matrix4f_print(&mat);
+    float data[4][4] = {
+        { 1, 2, 3, 4 },
+        { 5, 6, 7, 8 },
+        { 9, 10, 11, 12 },
+        { 13, 14, 15, 16 },
+    };
+
+    memcpy(mat.data, data, sizeof(data));
+    memcpy(mat2.data, data, sizeof(data));
+
+    /* Matrix4f result = math_mat4f_multiply(&mat, &mat2); */
+
+    math_mat4f_print(&mat);
+    math_mat4f_print(&mat2);
+
+    Matrix4f resultMat = math_mat4f_multiply(&mat, &mat2);
+
+    math_mat4f_print(&resultMat);
 
     /* GLFWwindow *window = app_window_initialize(WIDTH, HEIGHT, "BlocksWorld");
     app_glad_init(WIDTH, HEIGHT);

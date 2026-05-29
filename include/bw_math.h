@@ -44,6 +44,11 @@ typedef struct {
 } Vector4i;
 
 /* ---- Matrices ---- */
+
+void math_mat_fill(int elAmount, float mat[elAmount][elAmount], float scalar);
+void math_mat_scalar_prod_calc(int elAmount, float mat[elAmount][elAmount], float scalar);
+void math_mat_print(int elAmount, float mat[elAmount][elAmount]);
+
 /* --- floats --- */
 typedef struct {
     float data[2][2];
@@ -57,10 +62,14 @@ typedef struct {
     float data[4][4];
 } Matrix4f;
 
-Matrix4f math_matrix4f_create(float initial_value);
-void math_matrix4f_print(Matrix4f* mat);
+Matrix4f math_mat4f_create(float initial_value);
 
-void math_matrix4f_rotate(Matrix4f* mat, float radians, Vector3f vec3f);
+void math_mat4f_scalar_prod_calc(Matrix4f *mat, float scalar);
+Matrix4f math_mat4f_multiply(Matrix4f *mat1, Matrix4f *mat2);
+
+void math_mat4f_print(Matrix4f* mat);
+
+void math_mat4f_rotate(Matrix4f* mat, float radians, Vector3f vec3f);
 
 /* ---- Conversions ---- */
 float math_degrees_to_radians_convert(float degrees);

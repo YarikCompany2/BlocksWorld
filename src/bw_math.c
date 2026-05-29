@@ -6,27 +6,66 @@
 
 #include <stdio.h>
 
-Matrix4f math_matrix4f_create(float initial_value) {
-    Matrix4f mat;
+/* ---- Matrices ---- */
+
+void math_mat_fill(int elAmount, float mat[elAmount][elAmount], float initial_value) {
     uint32_t i, j;
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 4; j++) {
-            if (i == j) mat.data[i][j] = initial_value;
-            else mat.data[i][j] = 0;
+    for (i = 0; i < elAmount; i++) {
+        for (j = 0; j < elAmount; j++) {
+            if (i == j) mat[i][j] = initial_value;
+            else mat[i][j] = 0;
         }
     }
+}
+
+void math_mat_scalar_prod_calc(int elAmount, float mat[elAmount][elAmount], float scalar) {
+    uint32_t i, j;
+    for (i = 0; i < elAmount; i++) {
+        for (j = 0; j < elAmount; j++) {
+            mat[i][j] *= scalar;
+        }
+    }
+}
+
+void math_mat_print(int elAmount, float mat[elAmount][elAmount]) {
+    uint32_t i, j;
+    for (i = 0; i < elAmount; i++) {
+        for (j = 0; j < elAmount; j++) {
+            printf("%5.2f ", mat[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+/* --- float --- */
+Matrix4f math_mat4f_create(float initial_value) {
+    Matrix4f mat;
+    math_mat_fill(4, mat.data, initial_value);
 
     return mat;
 }
 
-void math_matrix4f_print(Matrix4f* mat) {
-    uint32_t i, j;
+void math_mat4f_scalar_prod_calc(Matrix4f* mat, float scalar) {
+    math_mat_scalar_prod_calc(4, mat->data, scalar);
+}
+
+Matrix4f math_mat4f_multiply(Matrix4f *mat1, Matrix4f *mat2) {
+    Matrix4f newMat;
+    uint32_t i, j, k;
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
-            printf("%5.2f ", mat->data[i][j]);
+            newMat.data[i][j] = 0;
+            for (k = 0; k < 4; k++) {
+                newMat.data[i][j] += mat1->data[i][k] * mat2->data[k][j];
+            }
         }
-        printf("\n");
     }
+
+    return newMat;
+}
+
+void math_mat4f_print(Matrix4f* mat) {
+    math_mat_print(4, mat->data);
 }
 
 /* ---- Conversions ---- */
