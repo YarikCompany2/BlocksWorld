@@ -5,11 +5,6 @@
 #include <GLFW/glfw3.h>
 #include <stdint.h>
 
-typedef enum {
-    BWB_FALSE,
-    BWB_TRUE,
-} BWBoolean;
-
 /* ---- WINDOW ---- */
 GLFWwindow *app_window_initialize(uint32_t width, uint32_t height, char title[]);
 void app_window_run_loop(GLFWwindow *window, float dt);

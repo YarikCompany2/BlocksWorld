@@ -1,11 +1,14 @@
 #include "renderer.h"
+
 #include "GLFW/glfw3.h"
-#include "app.h"
+#include "bw_math.h"
+#include "bw_enums.h"
 
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 const uint8_t MIN_POSSIBLE_SIZE_OF_FILE = 1;
 
@@ -194,6 +197,20 @@ void renderer_end_drawing() {
         exit(EXIT_FAILURE);
     }
 
+    Matrix4f mat = math_mat4f_create(1.0f);
+    Matrix4f rot_mat;
+
+    float data_rotation[4][4] = {
+        { 1, 0, 0, 0 },
+        { 0, cos(math_degrees_to_radians_convert(45)), -sin(math_degrees_to_radians_convert(45)), 0 },
+        { 0, sin(math_degrees_to_radians_convert(45)), cos(math_degrees_to_radians_convert(45)), 0 },
+        { 0, 0, 0, 1 }
+    };
+
+    memcpy(rot_mat.data, data_rotation, sizeof(data_rotation));
+
+    Matrix4f rotated_mat = math_mat4f_multiply(&mat, &rot_mat);
+
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
     glEnableVertexAttribArray(0);
 
@@ -205,6 +222,10 @@ void renderer_end_drawing() {
 
     Shader basic_shader = renderer_shader_vf_create("../shaders/basic.vs", "../shaders/basic.fs");
     ShaderProgram basic_program = renderer_shader_program_create(&basic_shader);
+
+    int vertex_model_uniform = glGetUniformLocation(basic_program, "model");
+    glUseProgram(basic_program);
+    glUniformMatrix4fv(vertex_model_uniform, 1, BWB_FALSE, (float*)rotated_mat.data);
 
     while (!glfwWindowShouldClose(s_renderer->window)) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);

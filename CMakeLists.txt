@@ -14,6 +14,7 @@ add_executable(${PROJECT_NAME}
     include/app.h
     include/renderer.h
     include/bw_math.h
+    include/bw_enums.h
 
     src/main.c
     src/app.c

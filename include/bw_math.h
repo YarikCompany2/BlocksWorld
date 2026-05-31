@@ -45,9 +45,13 @@ typedef struct {
 
 /* ---- Matrices ---- */
 
-void math_mat_fill(int elAmount, float mat[elAmount][elAmount], float scalar);
-void math_mat_scalar_prod_calc(int elAmount, float mat[elAmount][elAmount], float scalar);
-void math_mat_print(int elAmount, float mat[elAmount][elAmount]);
+typedef enum {
+    BW_AXIS_X, BW_AXIS_Y, BW_AXIS_Z
+} Axis;
+
+static void math_mat_fill(int elAmount, float mat[elAmount][elAmount], float scalar);
+static void math_mat_scalar_prod_calc(int elAmount, float mat[elAmount][elAmount], float scalar);
+static void math_mat_print(int elAmount, float mat[elAmount][elAmount]);
 
 /* --- floats --- */
 typedef struct {
@@ -65,11 +69,10 @@ typedef struct {
 Matrix4f math_mat4f_create(float initial_value);
 
 void math_mat4f_scalar_prod_calc(Matrix4f *mat, float scalar);
+Matrix4f math_mat4f_rotate(Matrix4f *mat, float radians, Axis axis);
 Matrix4f math_mat4f_multiply(Matrix4f *mat1, Matrix4f *mat2);
 
 void math_mat4f_print(Matrix4f* mat);
-
-void math_mat4f_rotate(Matrix4f* mat, float radians, Vector3f vec3f);
 
 /* ---- Conversions ---- */
 float math_degrees_to_radians_convert(float degrees);

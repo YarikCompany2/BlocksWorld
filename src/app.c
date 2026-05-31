@@ -2,6 +2,7 @@
 
 #include "renderer.h"
 #include "bw_math.h"
+#include "bw_enums.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,31 +54,13 @@ void app_framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 }
 
 void app_run(void) {
-    Matrix4f mat;
-    Matrix4f mat2;
-
-    float data[4][4] = {
-        { 1, 2, 3, 4 },
-        { 5, 6, 7, 8 },
-        { 9, 10, 11, 12 },
-        { 13, 14, 15, 16 },
-    };
-
-    memcpy(mat.data, data, sizeof(data));
-    memcpy(mat2.data, data, sizeof(data));
-
-    /* Matrix4f result = math_mat4f_multiply(&mat, &mat2); */
-
-    math_mat4f_print(&mat);
-    math_mat4f_print(&mat2);
-
-    Matrix4f resultMat = math_mat4f_multiply(&mat, &mat2);
-
-    math_mat4f_print(&resultMat);
-
-    /* GLFWwindow *window = app_window_initialize(WIDTH, HEIGHT, "BlocksWorld");
+    GLFWwindow *window = app_window_initialize(WIDTH, HEIGHT, "BlocksWorld");
     app_glad_init(WIDTH, HEIGHT);
     glfwSetFramebufferSizeCallback(window, app_framebuffer_size_callback);
+
+    Matrix4f mat = math_mat4f_create(1.0f);
+
+    Matrix4f newMat = math_mat4f_rotate(&mat, math_degrees_to_radians_convert(90), BW_AXIS_Z);
 
     Vertex vertices[3] = {
         -0.5f, -0.5f, 0.0f,
@@ -85,21 +68,12 @@ void app_run(void) {
          0.0f,  0.5f, 0.0f,
     };
 
-    Vertex vertices2[3] = {
-        -1.0f, -0.25f, 0.0f,
-        0.25f, -0.25f, 0.0,
-        0.0f, 0.5f, 0.0f,
-    };
-
     Triangle triangle = renderer_triangle_create(vertices[0], vertices[1], vertices[2]);
-    Triangle triangle2 = renderer_triangle_create(vertices2[0], vertices2[1], vertices2[2]);
 
     renderer_start_drawing(window); {
         renderer_triangle_draw(&triangle);
-        renderer_triangle_draw(&triangle2);
     }
     renderer_end_drawing();
 
-
-    app_window_terminate(window); */
+    app_window_terminate(window); 
 }

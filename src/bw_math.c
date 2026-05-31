@@ -5,6 +5,7 @@
 #endif
 
 #include <stdio.h>
+#include <math.h>
 
 /* ---- Matrices ---- */
 
@@ -25,6 +26,37 @@ void math_mat_scalar_prod_calc(int elAmount, float mat[elAmount][elAmount], floa
             mat[i][j] *= scalar;
         }
     }
+}
+
+Matrix4f math_mat4f_rotate(Matrix4f *mat, float radians, Axis axis) {
+    Matrix4f rotation_matrix = math_mat4f_create(1.0f);
+    switch (axis) {
+        case BW_AXIS_X:
+            rotation_matrix.data[1][1] = cos(radians);
+            rotation_matrix.data[1][2] = -sin(radians);
+            rotation_matrix.data[2][1] = sin(radians);
+            rotation_matrix.data[2][2] = cos(radians);
+            break;
+        case BW_AXIS_Y:
+            rotation_matrix.data[0][0] = cos(radians);
+            rotation_matrix.data[0][2] = sin(radians);
+            rotation_matrix.data[2][0] = -sin(radians);
+            rotation_matrix.data[2][2] = cos(radians);
+            break;
+        case BW_AXIS_Z:
+            rotation_matrix.data[0][0] = cos(radians);
+            rotation_matrix.data[0][1] = -sin(radians);
+            rotation_matrix.data[1][0] = sin(radians);
+            rotation_matrix.data[1][1] = cos(radians);
+            break;
+        default: printf("Specified axis doesn't exist\n");
+    }
+
+    Matrix4f rotated_matrix = math_mat4f_multiply(mat, &rotation_matrix);
+
+    math_mat4f_print(&rotated_matrix);
+
+    return rotation_matrix;
 }
 
 void math_mat_print(int elAmount, float mat[elAmount][elAmount]) {
