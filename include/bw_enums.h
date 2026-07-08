@@ -1,4 +1,4 @@
 typedef enum {
-    BWB_FALSE,
-    BWB_TRUE,
+    BW_BOOLEAN_FALSE,
+    BW_BOOLEAN_TRUE,
 } BWBoolean;

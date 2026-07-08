@@ -1,66 +1,13 @@
 #include "app.h"
 
-#include "renderer.h"
-#include "bw_math.h"
-#include "bw_enums.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "promise_engine.h"
 
 const uint32_t WIDTH = 800, HEIGHT = 600;
 
-/* ---- WINDOW ---- */
-GLFWwindow* app_window_initialize(uint32_t width, uint32_t height, char title[]) {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
-    if (window == NULL) {
-        printf("Failed to create GLFW window\n");
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-    glfwMakeContextCurrent(window);
-
-    return window;
-}
-
-void app_window_terminate(GLFWwindow* window) {
-    glfwDestroyWindow(window);
-    glfwTerminate();
-}
-
-void app_window_process_input(GLFWwindow *window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, BWB_TRUE);
-    }
-}
-
-/* ---- GLAD ---- */
-void app_glad_init(uint32_t width, uint32_t height) {
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        printf("Failed to initialize GLAD\n");
-        exit(EXIT_FAILURE);
-    }
-    
-    glViewport(0, 0, width, height);
-}
-
-void app_framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
-
 void app_run(void) {
-    GLFWwindow *window = app_window_initialize(WIDTH, HEIGHT, "BlocksWorld");
-    app_glad_init(WIDTH, HEIGHT);
-    glfwSetFramebufferSizeCallback(window, app_framebuffer_size_callback);
+    GLFWwindow *window = window_initialize(WIDTH, HEIGHT, "BlocksWorld");
 
-    Matrix4f mat = math_mat4f_create(1.0f);
-
-    Matrix4f newMat = math_mat4f_rotate(&mat, math_degrees_to_radians_convert(90), BW_AXIS_Z);
+    Renderer *renderer = renderer_create(window);
 
     Vertex vertices[3] = {
         -0.5f, -0.5f, 0.0f,
@@ -68,12 +15,12 @@ void app_run(void) {
          0.0f,  0.5f, 0.0f,
     };
 
-    Triangle triangle = renderer_triangle_create(vertices[0], vertices[1], vertices[2]);
+    Triangle triangle = triangle_create(vertices[0], vertices[1], vertices[2]);
 
     renderer_start_drawing(window); {
-        renderer_triangle_draw(&triangle);
+        triangle_draw(renderer, &triangle);
     }
     renderer_end_drawing();
 
-    app_window_terminate(window); 
+    window_terminate(window); 
 }
