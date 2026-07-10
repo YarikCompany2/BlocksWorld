@@ -10,6 +10,7 @@ typedef struct {
 
 Triangle triangle_create(Vertex a, Vertex b, Vertex c);
 
-void triangle_draw(Renderer *renderer, Triangle *triangle);
+void triangle_draw(Triangle *triangle);
+void triangle_print(Triangle *triangle, const char* triangle_name);
 
 #endif // TRIANGLE_INCLUDE
