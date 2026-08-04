@@ -23,6 +23,8 @@ add_executable(${PROJECT_NAME}
 
     include/shape/shape.h
     include/shape/triangle.h
+
+    include/tool/error_reporting.h
     
     include/app.h
     include/bw_enums.h
@@ -39,6 +41,8 @@ add_executable(${PROJECT_NAME}
 
     src/shape/shape.c
     src/shape/triangle.c
+
+    src/tool/error_reporting.c
 
     src/app.c
     src/main.c
