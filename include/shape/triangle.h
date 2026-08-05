@@ -2,7 +2,6 @@
 #define TRIANGLE_INCLUDE
 
 #include "shape/shape.h"
-#include "renderer/renderer.h"
 
 typedef struct {
     Vertex vertices[3];

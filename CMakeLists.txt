@@ -27,7 +27,7 @@ add_executable(${PROJECT_NAME}
     include/tool/error_reporting.h
     
     include/app.h
-    include/bw_enums.h
+    include/promise_enums.h
 
     src/display/window.c
 

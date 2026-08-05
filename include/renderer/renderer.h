@@ -13,9 +13,7 @@ typedef struct {
     BufferData buffer_data;
 } Renderer;
 
-extern Renderer *promise_renderer;
-
-void renderer_create(GLFWwindow *window);
+Renderer *renderer_get();
 
 void renderer_start_drawing(GLFWwindow *window);
 void renderer_end_drawing();

@@ -1,7 +1,8 @@
 #include "renderer/renderer.h"
 
 #include "GLFW/glfw3.h"
-#include "bw_enums.h"
+#include "display/window.h"
+#include "promise_enums.h"
 #include "renderer/buffer.h"
 #include "renderer/shader.h"
 
@@ -9,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Renderer *promise_renderer;
+static Renderer *promise_renderer = NULL;
 
 void renderer_create(GLFWwindow* window) {
     promise_renderer = malloc(sizeof(Renderer));
@@ -28,6 +29,15 @@ void renderer_destroy(Renderer *renderer) {
     free(renderer);
 }
 
+Renderer *renderer_get() {
+    if (promise_renderer) {
+        return promise_renderer;
+    } else {
+        fprintf(stderr, "You can't call uninitialized renderer\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
 void renderer_start_drawing(GLFWwindow *window) {
     if (promise_renderer) {
         fprintf(stderr, "You can call renderer_start_drawing() only one time\n");
@@ -43,14 +53,14 @@ void renderer_end_drawing() {
         exit(EXIT_FAILURE);
     }
 
+    glBindBuffer(GL_ARRAY_BUFFER, promise_renderer->VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * promise_renderer->buffer_data.size, promise_renderer->buffer_data.data, GL_STATIC_DRAW);
+
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, promise_renderer->VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * promise_renderer->buffer_data.size, promise_renderer->buffer_data.data, GL_STATIC_DRAW);
-
-    printf("sizeof * buffer_data.size: %lu\n", (sizeof(Vertex) * promise_renderer->buffer_data.size));
-    printf("buffer_data.size: %d\n", promise_renderer->buffer_data.size);
+    printf("buffer data size: %d\n", promise_renderer->buffer_data.size);
+    buffer_print_data(&promise_renderer->buffer_data);
 
     Shader basic_shader = shader_vf_create("../shaders/basic.vs", "../shaders/basic.fs");
     ShaderProgram basic_program = shader_program_create(&basic_shader);
@@ -59,12 +69,14 @@ void renderer_end_drawing() {
     glUseProgram(basic_program);
 
     while (!glfwWindowShouldClose(promise_renderer->window)) {
+        window_process_input(promise_renderer->window);
+
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(basic_program);
         glBindVertexArray(promise_renderer->VAO);
-        glDrawArrays(GL_TRIANGLES, 0, promise_renderer->buffer_data.size);
+        glDrawArrays(GL_TRIANGLES, 0, promise_renderer->buffer_data.size / 3);
 
         glfwSwapBuffers(promise_renderer->window);
         glfwPollEvents();

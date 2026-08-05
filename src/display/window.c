@@ -1,6 +1,6 @@
 #include "display/window.h"
 
-#include <bw_enums.h>
+#include "promise_enums.h"
 #include "tool/error_reporting.h"
 
 #include <stdio.h>
@@ -27,7 +27,7 @@ GLFWwindow* window_initialize(uint32_t width, uint32_t height, char title[]) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     #ifdef DEBUG
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, BW_BOOLEAN_TRUE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, PROMISE_B_TRUE);
     #endif
 
     GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -61,6 +61,6 @@ void window_terminate(GLFWwindow* window) {
 
 void window_process_input(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, BW_BOOLEAN_TRUE);
+        glfwSetWindowShouldClose(window, PROMISE_B_TRUE);
     }
 }
