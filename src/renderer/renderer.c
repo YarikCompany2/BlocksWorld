@@ -2,13 +2,12 @@
 
 #include "GLFW/glfw3.h"
 #include "display/window.h"
-#include "promise_enums.h"
 #include "renderer/buffer.h"
 #include "renderer/shader.h"
 
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
+
+#include "common.h"
 
 static Renderer *promise_renderer = NULL;
 
@@ -65,7 +64,6 @@ void renderer_end_drawing() {
     Shader basic_shader = shader_vf_create("../shaders/basic.vs", "../shaders/basic.fs");
     ShaderProgram basic_program = shader_program_create(&basic_shader);
 
-    int vertex_model_uniform = glGetUniformLocation(basic_program, "model");
     glUseProgram(basic_program);
 
     while (!glfwWindowShouldClose(promise_renderer->window)) {

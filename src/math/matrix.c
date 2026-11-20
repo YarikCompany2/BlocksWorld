@@ -1,35 +1,50 @@
 #include "math/matrix.h"
 #include <math.h>
 #include <stdio.h>
+#include "common.h"
 
-void mat_fill(uint32_t elAmount, float mat[elAmount][elAmount], float initial_value) {
-    uint32_t i, j;
-    for (i = 0; i < elAmount; i++) {
-        for (j = 0; j < elAmount; j++) {
-            if (i == j) mat[i][j] = initial_value;
-            else mat[i][j] = 0;
-        }
-    }
-}
+#define MAT_FILL(type, mat, el_amount, initial_value) \
+    do { \
+        for (u32 i = 0; (i < el_amount); i++) { \
+            for (u32 j = 0; (j < el_amount); j++) { \
+                if (i == j) \
+                    (mat[i][j] = ((type)initial_value)); \
+                else \
+                    (mat[i][j] = 0); \
+            } \
+        } \
+    } while(false) \
 
-void mat_scalar_prod_calc(uint32_t elAmount, float mat[elAmount][elAmount], float scalar) {
-    uint32_t i, j;
-    for (i = 0; i < elAmount; i++) {
-        for (j = 0; j < elAmount; j++) {
-            mat[i][j] *= scalar;
-        }
-    }
-}
+#define MAT_SCALAR_PRODUCT_CALC(type, mat, el_amount, scalar) \
+    do { \
+        for (u32 i = 0; (i < el_amount); i++) { \
+            for (u32 j = 0; (j < el_amount); j++) { \
+                (mat[i][j] *= ((type)scalar)); \
+            } \
+        } \
+    } while(false) \
 
-void mat_print(uint32_t elAmount, float mat[elAmount][elAmount]) {
-    uint32_t i, j;
-    for (i = 0; i < elAmount; i++) {
-        for (j = 0; j < elAmount; j++) {
-            printf("%5.2f ", mat[i][j]);
-        }
-        printf("\n");
-    }
-}
+#define MAT_PRINT(mat, el_amount, print_format) \
+    do { \
+        for (u32 i = 0; (i < el_amount); i++) { \
+            for (u32 j = 0; (j < el_amount); j++) { \
+                printf(print_format, mat[i][j]); \
+            } \
+            printf("\n"); \
+        } \
+    } while(false) \
+
+#define MAT_MULTIPLY(mat1, mat2, mat_new, el_amount) \
+    do { \
+        for (u32 i = 0; (i < el_amount); i++) { \
+            for (u32 j = 0; (j < el_amount); j++) { \
+                mat_new.data[i][j] = 0; \
+                for (u32 k = 0; (k < el_amount); k++) { \
+                    mat_new.data[i][j] += ((mat1->data[i][k]) * (mat2->data[k][j])); \
+                } \
+            } \
+        } \
+    } while(false) \
 
 Matrix4f mat4f_rotate(Matrix4f *mat, float radians, Axis axis) {
     Matrix4f rotation_matrix = mat4f_create(1.0f);
@@ -64,29 +79,23 @@ Matrix4f mat4f_rotate(Matrix4f *mat, float radians, Axis axis) {
 
 Matrix4f mat4f_create(float initial_value) {
     Matrix4f mat;
-    mat_fill(4, mat.data, initial_value);
+    MAT_FILL(float, mat.data, 4, initial_value);
 
     return mat;
 }
 
-void mat4f_scalar_prod_calc(Matrix4f* mat, float scalar) {
-    mat_scalar_prod_calc(4, mat->data, scalar);
+void mat4f_scalar_prod_calc(Matrix4f *mat, float scalar) {
+    MAT_SCALAR_PRODUCT_CALC(float, mat->data, 4, scalar);
 }
 
 Matrix4f mat4f_multiply(Matrix4f *mat1, Matrix4f *mat2) {
-    Matrix4f newMat;
-    for (uint32_t i = 0; i < 4; i++) {
-        for (uint32_t j = 0; j < 4; j++) {
-            newMat.data[i][j] = 0;
-            for (uint32_t k = 0; k < 4; k++) {
-                newMat.data[i][j] += mat1->data[i][k] * mat2->data[k][j];
-            }
-        }
-    }
+    Matrix4f result_mat;
 
-    return newMat;
+    MAT_MULTIPLY(mat1, mat2, result_mat, 4);
+
+    return result_mat;
 }
 
-void mat4f_print(Matrix4f* mat) {
-    mat_print(4, mat->data);
+void mat4f_print(Matrix4f *mat) {
+    MAT_PRINT(mat->data, 4, "%5.2f ");
 }

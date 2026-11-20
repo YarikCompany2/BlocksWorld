@@ -1,10 +1,11 @@
 #include "display/window.h"
 
-#include "promise_enums.h"
 #include "tool/error_reporting.h"
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "common.h"
 
 #define DEBUG
 
@@ -21,14 +22,15 @@ void window_framebuffer_size_callback(GLFWwindow *window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-GLFWwindow* window_initialize(uint32_t width, uint32_t height, char title[]) {
+GLFWwindow* window_initialize(uint32_t width, uint32_t height, const char *title) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    #ifdef DEBUG
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, PROMISE_B_TRUE);
-    #endif
+
+#ifdef DEBUG
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+#endif
 
     GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
     if (window == NULL) {
@@ -41,7 +43,7 @@ GLFWwindow* window_initialize(uint32_t width, uint32_t height, char title[]) {
     window_glad_init(width, height);
     glfwSetFramebufferSizeCallback(window, window_framebuffer_size_callback);
 
-    #ifdef DEBUG
+#ifdef DEBUG
     int context_flags = 0;
     glGetIntegerv(GL_CONTEXT_FLAGS, &context_flags);
 
@@ -49,7 +51,7 @@ GLFWwindow* window_initialize(uint32_t width, uint32_t height, char title[]) {
         printf("Debug context created!\n");
         enableReportGlErrors();
     }
-    #endif
+#endif
 
     return window;
 }
@@ -61,6 +63,6 @@ void window_terminate(GLFWwindow* window) {
 
 void window_process_input(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, PROMISE_B_TRUE);
+        glfwSetWindowShouldClose(window, true);
     }
 }

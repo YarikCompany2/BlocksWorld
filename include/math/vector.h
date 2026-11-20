@@ -1,7 +1,7 @@
 #ifndef VECTOR_INCLUDE
 #define VECTOR_INCLUDE
 
-#include <stdint.h>
+#include "common.h"
 
 typedef struct {
     float x, y;
@@ -16,27 +16,27 @@ typedef struct {
 } Vector4f;
 
 typedef struct {
-    uint32_t x, y;
+    u32 x, y;
 } Vector2u;
 
 typedef struct {
-    uint32_t x, y, z;
+    u32 x, y, z;
 } Vector3u;
 
 typedef struct {
-    uint32_t x, y, z, w;
+    u32 x, y, z, w;
 } Vector4u;
 
 typedef struct {
-    int32_t x, y;
+    i32 x, y;
 } Vector2i;
 
 typedef struct {
-    int32_t x, y, z;
+    i32 x, y, z;
 } Vector3i;
 
 typedef struct {
-    int32_t x, y, z, w;
+    i32 x, y, z, w;
 } Vector4i;
 
 #endif // VECTOR_INCLUDE

@@ -45,8 +45,8 @@ void buffer_data_add_triangle(BufferData *buffer_data, const Triangle *data) {
 }
 
 // Logic
-PromiseBoolean buffer_data_has_enough_space_for(BufferData *buffer_data, uint32_t size) {
-    return buffer_data->size + size > buffer_data->capacity ? PROMISE_B_TRUE : PROMISE_B_FALSE;
+bool buffer_data_has_enough_space_for(BufferData *buffer_data, uint32_t size) {
+    return buffer_data->size + size > buffer_data->capacity ? true : false;
 }
 
 // Debug
